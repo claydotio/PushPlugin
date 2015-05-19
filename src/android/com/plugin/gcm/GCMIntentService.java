@@ -12,6 +12,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
@@ -19,7 +22,7 @@ import com.google.android.gcm.GCMBaseIntentService;
 public class GCMIntentService extends GCMBaseIntentService {
 
 	private static final String TAG = "GCMIntentService";
-	
+
 	public GCMIntentService() {
 		super("GCMIntentService");
 	}
@@ -89,7 +92,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		notificationIntent.putExtra("pushBundle", extras);
 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		
+
 		int defaults = Notification.DEFAULT_ALL;
 
 		if (extras.getString("defaults") != null) {
@@ -97,11 +100,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 				defaults = Integer.parseInt(extras.getString("defaults"));
 			} catch (NumberFormatException e) {}
 		}
-		
+
+		String package_name = getApplication().getPackageName();
+		Resources resources = getApplication().getResources();
+		Bitmap largeIcon = BitmapFactory.decodeResource(resources, resources.getIdentifier("notification_large", "drawable", package_name));
+
 		NotificationCompat.Builder mBuilder =
 			new NotificationCompat.Builder(context)
 				.setDefaults(defaults)
-				.setSmallIcon(context.getApplicationInfo().icon)
+				.setSmallIcon(resources.getIdentifier("notification_small", "drawable", package_name))
+				.setLargeIcon(largeIcon)
 				.setWhen(System.currentTimeMillis())
 				.setContentTitle(extras.getString("title"))
 				.setTicker(extras.getString("title"))
@@ -119,9 +127,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		if (msgcnt != null) {
 			mBuilder.setNumber(Integer.parseInt(msgcnt));
 		}
-		
+
 		int notId = 0;
-		
+
 		try {
 			notId = Integer.parseInt(extras.getString("notId"));
 		}
@@ -131,20 +139,20 @@ public class GCMIntentService extends GCMBaseIntentService {
 		catch(Exception e) {
 			Log.e(TAG, "Number format exception - Error parsing Notification ID" + e.getMessage());
 		}
-		
+
 		mNotificationManager.notify((String) appName, notId, mBuilder.build());
 	}
-	
+
 	private static String getAppName(Context context)
 	{
-		CharSequence appName = 
+		CharSequence appName =
 				context
 					.getPackageManager()
 					.getApplicationLabel(context.getApplicationInfo());
-		
+
 		return (String)appName;
 	}
-	
+
 	@Override
 	public void onError(Context context, String errorId) {
 		Log.e(TAG, "onError - errorId: " + errorId);

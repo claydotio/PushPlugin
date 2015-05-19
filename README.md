@@ -1,3 +1,7 @@
+# Clay changes
+  - I haven't found an easy way to do this, but you need to get notification_small.png and notification_large.png in
+	  platforms/android/res/drawable somehow (gulpfile does it for now)
+
 # Cordova Push Notifications Plugin for Android, iOS, WP8, Windows8, BlackBerry 10 and Amazon Fire OS
 
 ## DESCRIPTION
