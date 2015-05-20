@@ -114,6 +114,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				.setContentTitle(extras.getString("title"))
 				.setTicker(extras.getString("title"))
 				.setContentIntent(contentIntent)
+				.setStyle(new NotificationCompat.BigTextStyle().bigText(extras.getString("message")))
 				.setAutoCancel(true);
 
 		String message = extras.getString("message");
